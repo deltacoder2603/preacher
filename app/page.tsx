@@ -1,103 +1,129 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import Hyperspeed from '@/components/Backgrounds/Hyperspeed/Hyperspeed';
+import { HyperText } from '@/components/magicui/hyper-text';
+import { ShinyButton } from '@/components/magicui/shiny-button';
+import GradientText from '@/components/TextAnimations/GradientText/GradientText';
+import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+
+export default function YouTubeDownloader() {
+  const [url, setUrl] = useState<string>('');
+  const [downloading, setDownloading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleDownload = async () => {
+    if (!url) {
+      setError('Please enter a valid YouTube URL.');
+      return;
+    }
+
+    setDownloading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to download the video');
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'video.mp4';
+      link.click();
+      window.URL.revokeObjectURL(downloadUrl);
+
+    } catch (error: any) {
+      console.error('Download failed:', error.message);
+      setError(error.message);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <>
+      <Hyperspeed
+      effectOptions={{
+      onSpeedUp: () => { },
+      onSlowDown: () => { },
+      distortion: 'turbulentDistortion',
+      length: 400,
+      roadWidth: 10,
+      islandWidth: 2,
+      lanesPerRoad: 4,
+      fov: 90,
+      fovSpeedUp: 150,
+      speedUp: 2,
+      carLightsFade: 0.4,
+      totalSideLightSticks: 20,
+      lightPairsPerRoadWay: 40,
+      shoulderLinesWidthPercentage: 0.05,
+      brokenLinesWidthPercentage: 0.1,
+      brokenLinesLengthPercentage: 0.5,
+      lightStickWidth: [0.12, 0.5],
+      lightStickHeight: [1.3, 1.7],
+      movingAwaySpeed: [60, 80],
+      movingCloserSpeed: [-120, -160],
+      carLightsLength: [400 * 0.03, 400 * 0.2],
+      carLightsRadius: [0.05, 0.14],
+      carWidthPercentage: [0.3, 0.5],
+      carShiftX: [-0.8, 0.8],
+      carFloorSeparation: [0, 5],
+      colors: {
+      roadColor: 0x080808,
+      islandColor: 0x0a0a0a,
+      background: 0x000000,
+      shoulderLines: 0xFFFFFF,
+      brokenLines: 0xFFFFFF,
+      leftCars: [0xD856BF, 0x6750A2, 0xC247AC],
+      rightCars: [0x03B3C3, 0x0E5EA5, 0x324555],
+      sticks: 0x03B3C3,
+      }
+      }}
+     />
+      <div className='p-4'>
+      <HyperText>Preacher</HyperText>
+      </div>
+      <div>
+      <div className='flex justify-center pt-[150px]'><GradientText
+        colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
+  animationSpeed={3}
+  showBorder={false}
+  className="custom-class"
+>
+  Youtube Video Downloader
+</GradientText>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      <div className='flex justify-center mt-[50px]'><Input
+        type="text"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        placeholder="Enter YouTube URL"
+        className="border p-2 w-80 mb-4 relative z-10"
+      />
+     </div>
+<div className='flex justify-center mt-1]'><ShinyButton
+        onClick={handleDownload}
+        disabled={downloading}
+        className='relative z-20'
+      >
+        {downloading ? 'Downloading...' : 'Download'}
+      </ShinyButton>
+
+      <div className='flex mt-10 justify-center'>{error && <p className="text-red-500 mt-4">{error}</p>}</div>
+      </div>
+      </div>
+    </>
   );
 }

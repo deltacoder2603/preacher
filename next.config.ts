@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  api: {
+    bodyParser: {
+      sizeLimit: "100mb"  // Increase the size limit for large YouTube videos
+    }
+  }
 };
 
 export default nextConfig;
