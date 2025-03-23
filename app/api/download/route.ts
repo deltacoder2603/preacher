@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
     }
 
     const videoBuffer = fs.readFileSync(videoFile);
-
     fs.unlinkSync(videoFile);
 
     const headers = new Headers({
@@ -37,8 +36,10 @@ export async function POST(req: NextRequest) {
 
     return new NextResponse(videoBuffer, { headers });
 
-  } catch (error: any) {
-    console.error('Error:', error.message);
-    return NextResponse.json({ error: error.message || 'Failed to download video' }, { status: 500 });
+  } catch (error: unknown) {  // <-- Use `unknown` for type safety
+    console.error('Error:', (error as Error).message);  // Type assertion
+    const errorMessage = error instanceof Error ? error.message : 'Failed to download video';
+
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

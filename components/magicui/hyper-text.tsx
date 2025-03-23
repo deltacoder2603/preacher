@@ -42,16 +42,14 @@ export function HyperText({
   characterSet = DEFAULT_CHARACTER_SET,
   ...props
 }: HyperTextProps) {
-  const MotionComponent = motion.create(Component, {
-    forwardMotionProps: true,
-  });
+  const MotionComponent = motion(Component) as React.ElementType;
 
   const [displayText, setDisplayText] = useState<string[]>(() =>
     children.split(""),
   );
-  const [isAnimating, setIsAnimating] = useState(false);
-  const iterationCount = useRef(0);
-  const elementRef = useRef<HTMLElement>(null);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const iterationCount = useRef<number>(0);
+  const elementRef = useRef<HTMLElement | null>(null);
 
   const handleAnimationTrigger = () => {
     if (animateOnHover && !isAnimating) {
@@ -106,7 +104,7 @@ export function HyperText({
                 : characterSet[getRandomInt(characterSet.length)],
           ),
         );
-        iterationCount.current = iterationCount.current + 0.1;
+        iterationCount.current += 0.1;
       } else {
         setIsAnimating(false);
         clearInterval(interval);
@@ -118,7 +116,7 @@ export function HyperText({
 
   return (
     <MotionComponent
-      ref={elementRef}
+      ref={elementRef as any} 
       className={cn("overflow-hidden py-2 text-4xl font-bold", className)}
       onMouseEnter={handleAnimationTrigger}
       {...props}
